@@ -1,0 +1,13 @@
+h1,h2,h3,h4,h5,h6,p {
+    word-break: keep-all;
+}
+.ulOptions li {
+    list-style-type: none;
+}
+
+/*Resolve problemas com overflow*/
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}

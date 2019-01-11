@@ -1,0 +1,65 @@
+
+.snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+
+    -webkit-box-shadow: 15px 18px 18px 6px rgba(0,0,0,0.75);
+    -moz-box-shadow: 15px 18px 18px 6px rgba(0,0,0,0.75);
+    box-shadow: 15px 18px 18px 6px rgba(0,0,0,0.75);
+}
+
+.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+.sb-danger {
+    color: white;
+    background-color: #E81E0C;
+}
+
+.sb-success {
+    color: white;
+    background-color: #007D12;
+}
+
+.sb-warning {
+    color: white;
+    background-color: #FFA60D;
+}
+
+.sb-default {
+    background-color: #333;
+    color: #fff;
+}
+

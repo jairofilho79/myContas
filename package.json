@@ -1,0 +1,28 @@
+{
+  "name": "myContas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jairofilho79/myContas.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jairofilho79/myContas/issues"
+  },
+  "homepage": "https://github.com/jairofilho79/myContas#readme",
+  "dependencies": {
+    "bootstrap": "^4.2.1",
+    "moment-timezone": "^0.5.23",
+    "mysql": "^2.16.0",
+    "tingle.js": "^0.14.0",
+    "validator": "^10.9.0",
+    "vanilla-js-tabs": "github:zoltantothcom/vanilla-js-tabs"
+  }
+}
