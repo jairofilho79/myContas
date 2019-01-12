@@ -1,0 +1,64 @@
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    display: inline-flex;
+    margin: 0.5%;
+    flex-flow: column;
+}
+
+.card-rounded {
+    border-radius: 5px; /* 5px rounded corners */
+}
+
+/* On mouse-over, add a deeper shadow */
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 2px 16px;
+}
+
+.tag{
+    text-align: center;
+    background-color: #000000;
+    color:white;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.tag-success {
+    background-color: #007D12;
+
+}
+
+.tag-danger {
+    background-color: #E81E0C;
+}
+
+.card-btn {
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 5%;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 2.3vh;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    transition: all 0.3s ease-in-out;
+}
+
+.card-btn:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.card-btn:hover::after {
+    opacity: 1;
+}

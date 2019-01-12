@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/jairofilho79/myContas#readme",
   "dependencies": {
-    "bootstrap": "^4.2.1",
     "moment-timezone": "^0.5.23",
     "mysql": "^2.16.0",
     "tingle.js": "^0.14.0",

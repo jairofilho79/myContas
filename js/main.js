@@ -1,5 +1,5 @@
 
-const apiUrl = "http://192.168.0.16:8081/";
+const apiUrl = "http://192.168.0.6:8082/";
 let lancamentosLista = [];
 let CategoriaLista = {};
 let FonteDinLista = {};
@@ -8,14 +8,9 @@ let strPesquisa = "?status=0";
 
 let userId = 1;
 
-const tabsHome = new Tabs({
-    elem: "tabsHome",
-    open: 0
-});
+const tabsHome = new Tabs({elem: "tabsHome", open: 0});
 
-function homeButton() {
-    getLancs("?status=0");
-}
+// function homeButton() {getLancs(strPesquisa);}
 
 window.onload = function() {
     getJson("categorias_all").then(result => {for(let i=0; i<result.length; i++) {CategoriaLista[result[i].cat_id] = result[i].nome;}});
@@ -407,41 +402,26 @@ function setLanc() {
     const lancamentos = document.getElementById("lancamentos");
     lancamentos.innerHTML = "";
     if(lancamentosLista.length === 0) {
-        lancamentos.setAttribute("class","text-center");
+        lancamentos.setAttribute("style","text-align:center;");
         lancamentos.innerHTML = "<h1>Nada foi encontrado! :(</h1>";
     }
-    const ul = document.createElement("ul");
-    lancamentos.appendChild(ul);
-
-    const columns = document.createElement("div");
-    columns.setAttribute("class","card-columns");
-    ul.appendChild(columns);
 
     for(let i=0;i<lancamentosLista.length;i++) {
         const elemento = document.createElement("div");
         elemento.innerHTML =
-            `<div class="card col-auto">
-                    <div class="card-header text-white ${lancamentosLista[i].a_pagar == "0" ? "bg-success" : "bg-danger"}"> ${lancamentosLista[i].status == "0" ? lancamentosLista[i].a_pagar == "0" ? "Receber" : "Pagar" : lancamentosLista[i].a_pagar == "0" ? "Recebido" : "Pago"}</div>
-                    <!--<img class="card-img-top" src="imgs/slide-01.png">-->
-                    <div class="card-body">
-                        <h4 class="card-title">${lancamentosLista[i].nome}</h4>
-                        <!--<h6 class="card-subtitle mb-2 text-muted">Lorem Ipsom Subtitle 2</h6>
-                        <p class="card-text">
-                            lo XVI, quando um impressor desconhecido pegou uma bandeja de tipos e os embaralhou para fazer um livro de modelos de tipos. Lorem Ipsum sobreviveu não só a cinco séculos, como também ao salto para a editoração eletrônica, permanecendo essencialmente inalterado. Se popularizou na década de 60, quando a Letraset lançou decalques contendo passagens de Lorem Ipsum, e mais recentemente quando passou a ser integrado a softwares de editoração eletrônica como A
-                        </p>-->
+            `
+                    <div class="tag tag-${lancamentosLista[i].a_pagar == "0" ? "success" : "danger"}">${lancamentosLista[i].status == "0" ? lancamentosLista[i].a_pagar == "0" ? "Receber" : "Pagar" : lancamentosLista[i].a_pagar == "0" ? "Recebido" : "Pago"}</div>
+                        <div class="container">
+                        <h4 style="text-align: center;"><b>${lancamentosLista[i].nome}</b></h4> 
+                        <p>${formatter("money-br",lancamentosLista[i].valor)}</p> 
+                        <p>${formatter("date-br",lancamentosLista[i].data_pag)}</p>
+                        <button class="card-btn moreInfo" id="${i}">+ Info</button> 
+                        ${lancamentosLista[i].status == 0 ? `<button class="card-btn pagar" id="${i}">Pagar</button>` : ``}
+                        </div> 
                     </div>
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">${formatter("money",lancamentosLista[i].valor)}</li>
-                        <li class="list-group-item">${new Date(lancamentosLista[i].data_pag).toLocaleDateString("pt-BR")}</li>
-                    </ul>
-                    <div class="card-body">
-                        <a href="#" class="card-link moreInfo" id="${i}">+ Info</a>
-                        ${!lancamentosLista[i].status ? `<a href="#" class="card-link pagar" id="${i}">Pagar</a>` : ``}
-                        <!--<a href="#" class="card-link">card link 2</a>-->
-                    </div>
-                    <!--<div class="card-footer"><p class="text-muted">Existem muitas variações</p></div>-->
-                </div>`;
-        columns.appendChild(elemento);
+               `;
+        elemento.setAttribute("class","card");
+        lancamentos.appendChild(elemento);
     }
 
     Array.from( document.getElementsByClassName("pagar")).forEach(function(element) {
@@ -460,7 +440,7 @@ function setLanc() {
     tabsHome.open(0);
 }
 
-function setEstatic() {
+function setEstatic()  {
     let html = "";
     let lancEstatics = {
         valorReceitaPagoC: 0,
@@ -531,7 +511,7 @@ function setEstatic() {
     `;
     } else {
         html = "<h1>Nada a mostrar! :(</h1>"
-        document.getElementById("estatisticas").setAttribute("class","text-center");
+        document.getElementById("estatisticas").setAttribute("style","text-align:center;");
     }
     document.getElementById("estatisticas").innerHTML = html;
 }
@@ -599,8 +579,11 @@ function getLancs(params) {getJson("lancamentos"+params).then(result => {lancame
 
 function formatter(type,value) {
     switch (type) {
-        case "money":
+        case "money-br":
             return `R$ ${Number(value).toFixed(2).replace(".",",")}`;
+            break;
+        case "date-br":
+            return new Date(value).toLocaleDateString("pt-br");
             break;
     }
 }
