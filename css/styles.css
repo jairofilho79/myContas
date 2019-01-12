@@ -1,6 +1,12 @@
 h1,h2,h3,h4,h5,h6,p {
     word-break: keep-all;
 }
+.header{
+    padding:2vh;
+    text-align: center;
+    font-weight: 600;
+    font-size: 8vh;
+}
 .ulOptions li {
     list-style-type: none;
 }
@@ -10,4 +16,33 @@ h1,h2,h3,h4,h5,h6,p {
     content: "";
     clear: both;
     display: table;
+}
+
+.row {
+    display: flex;
+    margin: 1vh 0;
+}
+
+.t-right {
+    float: right;
+    margin-right: 1vw;
+}
+
+.column {
+    flex: 2;
+}
+
+.column-3 {
+    flex: 3;
+}
+
+.column-4 {
+    flex: 4;
+}
+
+@media screen and (min-width: 690px) {
+    .column, .column-3, .column-4 {
+        flex: 1;
+        width: 100%;
+    }
 }

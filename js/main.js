@@ -22,16 +22,24 @@ window.onload = function() {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("pesquisarLanc").addEventListener("click", function(event) {
-        pesquisarLanc();
+    document.getElementById("pesquisarLanc").addEventListener("click", function(event) {pesquisarLanc(); closeOffCanvas()});
+    document.getElementById("novoLanc").addEventListener("click", function(event) {novoLanc(); closeOffCanvas()});
+    document.getElementById("simulacao").addEventListener("click", function(event) {simulacao(); closeOffCanvas()});
+
+    document.getElementById("funcionalidades").addEventListener("click", function(event) {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("app").style.marginLeft = "250px";
+        document.getElementById("app").addEventListener("click", closeOffCanvas);
     });
-    document.getElementById("novoLanc").addEventListener("click", function(event) {
-        novoLanc();
-    });
-    document.getElementById("simulacao").addEventListener("click", function(event) {
-        simulacao();
-    });
+    document.getElementsByClassName("closebtn")[0].addEventListener("click", closeOffCanvas);
+
 });
+
+function closeOffCanvas() {
+    document.getElementById("mySidenav").style.width = "0";
+    document.getElementById("app").style.marginLeft = "0";
+    document.getElementById("app").removeEventListener("click",closeOffCanvas)
+}
 
 let ids = ['nome','agente'];
 let idsPesc = ['valorIni','valorFim','data_pagIni','data_pagFim'];
@@ -67,69 +75,74 @@ function moreInfo(i) {
     });
 
     modal.setContent(`
-        <h1>Mais informações</h1>
+        <h1 class="header">Mais informações</h1>
 
-        <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Atributo</th>
-              <th scope="col">Conteúdo</th>
-            </tr>
-          </thead>
-          <tbody>
-          
-            <tr>
-              <th scope="row">Nome</th>
-              <td>${lancamentosLista[i].nome}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Valor</th>
-              <td>${formatter("money",lancamentosLista[i].valor)}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Comentário</th>
-              <td>${lancamentosLista[i].comentario ? lancamentosLista[i].comentario : "Não há comentários."}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Data de Pagamento</th>
-              <td>${new Date(lancamentosLista[i].data_pag).toLocaleDateString("pt-BR")}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Status</th>
-              <td>${lancamentosLista[i].status == "0" ? "Não Pago" : "Pago"}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Tipo</th>
-              <td>${lancamentosLista[i].a_pagar == "0" ? "Receita" : "Custo"}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Categoria</th>
-              <td>${CategoriaLista[lancamentosLista[i].cat_id]}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Fonte do Dinheiro</th>
-              <td>${FonteDinLista[lancamentosLista[i].ftd_id].nome}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Meio de Pagamento</th>
-              <td>${MeioPagLista[lancamentosLista[i].mpg_id]}</td>
-            </tr>
-            
-            <tr>
-              <th scope="row">Agente</th>
-              <td>${lancamentosLista[i].agente}</td>
-            </tr>
-            
-          </tbody>
-        </table>
+        <div class="row">
+          <div class="column"><strong>Nome</strong></div>
+          <div class="column">${lancamentosLista[i].nome}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Valor</strong></div>
+          <div class="column">${formatter("money-br",lancamentosLista[i].valor)}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Comentário</strong></div>
+          <div class="column">${lancamentosLista[i].comentario ? lancamentosLista[i].comentario : "Não há comentários."}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Data de Pagamento</strong></div>
+          <div class="column">${formatter("date-br",lancamentosLista[i].data_pag)}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Status</strong></div>
+          <div class="column">${lancamentosLista[i].status == "0" ? "Não Pago" : "Pago"}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Tipo</strong></div>
+          <div class="column">${lancamentosLista[i].a_pagar == "0" ? "Receita" : "Custo"}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Categoria</strong></div>
+          <div class="column">${CategoriaLista[lancamentosLista[i].cat_id]}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Fonte do Dinheiro</strong></div>
+          <div class="column">${FonteDinLista[lancamentosLista[i].ftd_id].nome}</div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Meio de Pagamento</strong></div>
+          <div class="column">${MeioPagLista[lancamentosLista[i].mpg_id]}</div>
+        </div>
+        <hr>
+        
+        <div class="row">
+          <div class="column"><strong>Agente</strong></div>
+          <div class="column">${lancamentosLista[i].agente}</div>
+        </div>
     `);
 
     modal.addFooterBtn('Editar', 'tingle-btn tingle-btn--primary', function() {
@@ -140,9 +153,7 @@ function moreInfo(i) {
     modal.open();
 }
 
-function editarLanc(i) {
-    console.log("editar");
-}
+function editarLanc(i) {console.log("editar");}
 
 function pesquisarLanc() {
     const modal = new tingle.modal({
@@ -152,45 +163,65 @@ function pesquisarLanc() {
         }
     });
     let html = `
+
+    <h1 class="header">Pesquisar Lançamento</h1>
+    <div class="clearfix">
+ 
     <form id="searchForm">
-          <div class="form-group">
+        <div class="row">
+            <div class="column">
                 <label for="nome">Nome:</label>
-                <input type="text" class="form-control" id="nome">
+                <input type="text" class="t-right" id="nome">
+            </div>
                 
+            <div class="column">
                 <label for="agente">Agente:</label>
-                <input type="text" class="form-control" id="agente">
-                
-          </div>
-          
-          <div class="form-group">
+                <input type="text" class="t-right"" id="agente">
+            </div>    
+            
+        </div>
+        
+        <div class="row">
+            <div class="column">
                 <label for="valorIni">Valor Inicial:</label>
-                <input type="number" class="form-control" id="valorIni">
+                <input type="number" class="t-right" id="valorIni">
+            </div>
                 
+            <div class="column">
                 <label for="valorFim">Valor Final:</label>
-                <input type="number" step="0.01" class="form-control" id="valorFim">
-                
-          </div>
-          <div class="form-group">
+                <input type="number" step="0.01" class="t-right" id="valorFim">
+            </div>    
+            
+        </div>
+        
+        <div class="row">
+            <div class="column">
                 <label for="data_pagIni">Data de Pagamento Inicial:</label>
-                <input type="date" class="form-control" id="data_pagIni">
+                <input type="date" class="t-right" id="data_pagIni">
+            </div>
                 
+            <div class="column">
                 <label for="data_pagFim">Data de Pagamento Final:</label>
-                <input type="date" step="0.01" class="form-control" id="data_pagFim">
-          </div>
-          
-          <div class="form-group">
-                <label for="status">Status:</label>
-                <ul class="ulOptions">
-                    <li><input type="radio" name="status" id="status" value="1"> Pago</li>
-                    <li><input type="radio" name="status" id="status" value="0"> Não Pago</li>
-                </ul>
-                
-                
-                <label for="a_pagar">Tipo:</label>
+                <input type="date" step="0.01" class="t-right" id="data_pagFim">
+            </div>    
+            
+        </div>
+        
+        
+            <label for="status">Status:</label>
+            <ul class="ulOptions">
+                <li><input type="radio" name="status" id="status" value="1"> Pago</li>
+                <li><input type="radio" name="status" id="status" value="0"> Não Pago</li>
+            </ul>
+        
+        
+        
+            <label for="a_pagar">Tipo:</label>
                 <ul class="ulOptions">
                     <li><input type="radio" name="a_pagar" id="a_pagar" value="0"> Receita</li>
                     <li><input type="radio" name="a_pagar" id="a_pagar" value="1"> Custo</li>
                 </ul>
+          
     `;
 
     html += `<label for="cat_id">Categoria:</label> <ul class="ulOptions">`;
@@ -217,8 +248,7 @@ function pesquisarLanc() {
     html += `</ul>`;
 
     html += `
-        </div>
-    </form>`;
+    </form></div>`;
 
     modal.setContent(html);
 
@@ -528,11 +558,11 @@ function atualizarFontesDin() {
                 valor: result[i].valor
             };
             html += `<div>
-                        <h3 id="${result[i].ftd_id}" class="btn_ftd_change_val" style="margin-top: 3%; cursor: pointer;">${result[i].nome} : ${formatter("money",result[i].valor)}</h3>
+                        <h3 id="${result[i].ftd_id}" class="btn_ftd_change_val" style="margin-top: 3%; cursor: pointer;">${result[i].nome} : ${formatter("money-br",result[i].valor)}</h3>
                     </div>`;
         }
 
-        html += `<hr/><div><h2>Valor Total : ${formatter("money",valorTotal)}</h2></div>`;
+        html += `<hr/><div><h2>Valor Total : ${formatter("money-br",valorTotal)}</h2></div>`;
 
         main.innerHTML = html;
 
@@ -580,7 +610,8 @@ function getLancs(params) {getJson("lancamentos"+params).then(result => {lancame
 function formatter(type,value) {
     switch (type) {
         case "money-br":
-            return `R$ ${Number(value).toFixed(2).replace(".",",")}`;
+            let numberFormat1 = new Intl.NumberFormat('BRL',{ style: 'currency', currency: 'BRL' });
+            return "R$ "+numberFormat1.format(value).replace("R$","");
             break;
         case "date-br":
             return new Date(value).toLocaleDateString("pt-br");
