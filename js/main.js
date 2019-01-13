@@ -169,42 +169,31 @@ function pesquisarLanc() {
  
     <form id="searchForm">
         <div class="row">
-            <div class="column">
-                <label for="nome">Nome:</label>
-                <input type="text" class="t-right" id="nome">
-            </div>
-                
-            <div class="column">
-                <label for="agente">Agente:</label>
-                <input type="text" class="t-right"" id="agente">
-            </div>    
-            
+            <label for="nome">Nome:</label>
+            <input type="text" class="t-right" id="nome">
+        </div>
+        <div class="row">
+            <label for="agente">Agente:</label>
+            <input type="text" class="t-right"" id="agente">
+        </div>
+        <div class="row">
+            <label for="valorIni">Valor Inicial:</label>
+            <input type="number" class="t-right" id="valorIni">
         </div>
         
         <div class="row">
-            <div class="column">
-                <label for="valorIni">Valor Inicial:</label>
-                <input type="number" class="t-right" id="valorIni">
-            </div>
-                
-            <div class="column">
-                <label for="valorFim">Valor Final:</label>
-                <input type="number" step="0.01" class="t-right" id="valorFim">
-            </div>    
-            
+            <label for="valorFim">Valor Final:</label>
+            <input type="number" step="0.01" class="t-right" id="valorFim">
         </div>
         
         <div class="row">
-            <div class="column">
-                <label for="data_pagIni">Data de Pagamento Inicial:</label>
-                <input type="date" class="t-right" id="data_pagIni">
-            </div>
-                
-            <div class="column">
-                <label for="data_pagFim">Data de Pagamento Final:</label>
-                <input type="date" step="0.01" class="t-right" id="data_pagFim">
-            </div>    
+            <label for="data_pagIni">Data de Pagamento Inicial:</label>
+            <input type="date" class="t-right" id="data_pagIni">
+        </div>
             
+        <div class="row">
+            <label for="data_pagFim">Data de Pagamento Final:</label>
+            <input type="date" step="0.01" class="t-right" id="data_pagFim">
         </div>
         
         
@@ -292,57 +281,56 @@ function novoLanc() {
 
     let html = `
     <form id="lancForm">
-          <div class="form-group">
-                <label for="nome">*Nome:</label>
-                <input type="text" class="form-control" id="nome">
-                
-                <label for="agente">*Agente:</label>
-                <input type="text" class="form-control" id="agente">
-                
-                <label for="comentario">*Comentário:</label>
-                <input type="text" class="form-control" id="comentario">
-                
-          </div>
-          
-          <div class="form-group">
-                <label title="Este valor será dividido pelas parcelas." for="valor">*Valor Total:</label>
-                <input type="number" step="0.01" class="form-control" id="valor">
-          </div>
-          
-          <div class="form-group">
-                <label for="parcelas">*Parcelas:</label>
-                <input type="number" min="1" step="1" value="1" class="form-control" id="parcelas">
-          </div>
-          
-          <div class="form-group">
-                <label for="fixo">*O Lançamento é:</label>
-                <ul class="ulOptions">
-                    <li><input type="radio" name="fixo" id="fixo" value="1">Fixo</li>
-                    <li><input type="radio" name="fixo" id="fixo" value="0" checked>Único</li>
-                </ul>
-          </div>
-          
-          <div class="form-group">
-                <label for="data_pag">*Data de Pagamento:</label>
-                <input type="date" value="YYYY-MM-DD" class="form-control" id="data_pag">
-          </div>
-          
-          <div class="form-group">
-                <label for="status">*Status:</label>
-                <ul class="ulOptions">
-                    <li><input type="radio" name="status" id="status" value="1"> Pago</li>
-                    <li><input type="radio" name="status" id="status" value="0" checked> Não Pago</li>
-                </ul>
-                
-                
-                <label for="a_pagar">*Tipo:</label>
-                <ul class="ulOptions">
-                    <li><input type="radio" name="a_pagar" id="a_pagar" value="0"> Receita</li>
-                    <li><input type="radio" name="a_pagar" id="a_pagar" value="1" checked> Custo</li>
-                </ul>
+        <div class="row">
+            <label for="nome">*Nome:</label>
+            <input type="text" class="t-right" id="nome">
+        </div>
+        <hr>
+        <div class="row">
+            <label for="agente">*Agente:</label>
+            <input type="text" class="t-right" id="agente">
+        </div>
+        <hr>
+        <div class="row">
+            <label for="comentario">Comentário:</label>
+            <input type="text" class="t-right" id="comentario">
+        </div>
+        <hr>  
+        <div class="row">
+            <label title="Este valor será dividido pelas parcelas." for="valor">*Valor Total:</label>
+            <input type="number"  class="t-right" id="valor">
+        </div>
+        <hr>
+        <div class="row">
+            <label for="parcelas">*Parcelas:</label>
+            <input type="number" min="1" step="1" value="1" class="t-right" id="parcelas">
+        </div>
+        <hr>  
+        <label for="fixo">*O Lançamento é:</label>
+        <ul class="ulOptions">
+            <li><input type="radio" name="fixo" id="fixo" value="1">Fixo</li>
+            <li><input type="radio" name="fixo" id="fixo" value="0" checked>Único</li>
+        </ul>
+        <hr>  
+        <div class="row">
+            <label for="data_pag">*Data de Pagamento:</label>
+            <input type="date" value="YYYY-MM-DD" class="t-right" id="data_pag">
+        </div>
+        <hr>  
+        <label for="status">*Status:</label>
+        <ul class="ulOptions">
+            <li><input type="radio" name="status" id="status" value="1"> Pago</li>
+            <li><input type="radio" name="status" id="status" value="0" checked> Não Pago</li>
+        </ul>
+        <hr>
+        <label for="a_pagar">*Tipo:</label>
+        <ul class="ulOptions">
+            <li><input type="radio" name="a_pagar" id="a_pagar" value="0"> Receita</li>
+            <li><input type="radio" name="a_pagar" id="a_pagar" value="1" checked> Custo</li>
+        </ul>
     `;
 
-    html += `<label for="cat_id">*Categoria:</label> <ul class="ulOptions">`;
+    html += `<hr><label for="cat_id">*Categoria:</label> <ul class="ulOptions">`;
     let keys;
 
     keys = Object.keys(CategoriaLista);
@@ -352,21 +340,20 @@ function novoLanc() {
     html += `</ul>`;
 
     keys = Object.keys(FonteDinLista);
-    html += `<label for="ftd_id">*Fonte do Dinheiro:</label> <ul class="ulOptions">`;
+    html += `<hr><label for="ftd_id">*Fonte do Dinheiro:</label> <ul class="ulOptions">`;
     for (let i = 0; i < keys.length; i++) {
         html += `<li><input type="radio" name="ftd_id" id="ftd_id" value="${keys[i]}" checked> ${FonteDinLista[keys[i]].nome}</li>`;
     }
     html += `</ul>`;
 
     keys = Object.keys(MeioPagLista);
-    html += `<label for="mpg_id">*Meio de Pagamento:</label> <ul class="ulOptions">`;
+    html += `<hr><label for="mpg_id">*Meio de Pagamento:</label> <ul class="ulOptions">`;
     for (let i = 0; i < keys.length; i++) {
         html += `<li><input type="radio" name="mpg_id" id="mpg_id" value="${keys[i]}" checked> ${MeioPagLista[keys[i]]}</li>`;
     }
     html += `</ul>`;
 
     html += `
-        </div>
     </form>`;
 
     modal.setContent(html);
@@ -509,35 +496,40 @@ function setEstatic()  {
         }
 
         html = `
-    <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Atributo</th>
-              <th aria-colspan="2" scope="col">Conteúdos</th>
-            </tr>
-          </thead>
-          <tbody>
-          
-            <tr>
-              <th scope="row"> [<strong title="Pago">P</strong> | <strong title="Não Pago">NP</strong>] Receita</th>
-              <td>R$ ${Number(lancEstatics.valorReceitaPago).toFixed(2).replace(".",",")} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></td>
-              <td>R$ ${Number(lancEstatics.valorReceitaNPAgo).toFixed(2).replace(".",",")} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPAgoC}]</strong></td>
-            </tr>
+            <div class="row">
+                <div class="column"><strong>Atributo</strong></div>
+                <div class="column">Conteúdos</div>
+            </div>
             
-            <tr>
-              <th scope="row"> [<strong title="Pago">P</strong> | <strong title="Não Pago">NP</strong>] Custo</th>
-              <td>R$ ${Number(lancEstatics.valorCustoPago).toFixed(2).replace(".",",")} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></td>
-              <td>R$ ${Number(lancEstatics.valorCustoNPago).toFixed(2).replace(".",",")} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></td>
-            </tr>        
+            <div class="row">
+                <div class="column"><strong>Receita Paga</strong></div>
+                <div class="column">${formatter("money-br",lancEstatics.valorReceitaPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></div>
+            </div>
             
-            <tr>
-              <th scope="row">[Antiga | Nova] <strong title="Data de pagamento">Data</strong></th>
-              <td>${moment(lancEstatics.dataInicial,"YYYY-MM-DD").format("DD/MM/YYYY")}</td>
-              <td>${moment(lancEstatics.dataFinal,"YYYY-MM-DD").format("DD/MM/YYYY")}</td>
-            </tr>
-                       
-          </tbody>
-        </table>
+            <div class="row">
+                <div class="column"><strong>Receita Não Paga</strong></div>
+                <div class="column">${formatter("money-br",lancEstatics.valorReceitaNPAgo)} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPAgoC}]</strong></div>
+            </div>
+            
+            <div class="row">
+                <div class="column"><strong>Custo Pago</strong></div>
+                <div class="column">${formatter("money-br",lancEstatics.valorCustoPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></div>
+            </div>
+            
+            <div class="row">
+                <div class="column"><strong>Custo Não Pago</strong></div>
+                <div class="column">${formatter("money-br",lancEstatics.valorCustoNPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></div>
+            </div>
+            
+            <div class="row">
+                <div class="column"><strong>Data mais nova</strong></div>
+                <div class="column">${formatter("date-br",lancEstatics.dataInicial)}</div>
+            </div>
+            
+            <div class="row">
+                <div class="column"><strong>Data mais antiga</strong></div>
+                <div class="column">${formatter("date-br",lancEstatics.dataFinal)}</div>
+            </div>
     `;
     } else {
         html = "<h1>Nada a mostrar! :(</h1>"
@@ -578,9 +570,9 @@ function atualizarFontesDin() {
 
                 modal.setContent(`
                 <form id="lancForm">
-                      <div class="form-group">
+                      <div class="row">
                             <label for="nome">*Valor:</label>
-                            <input type="number" step="0.01" class="form-control" id="ftd_value">
+                            <input type="number" step="0.01" id="ftd_value">
                       </div>
                 </form>
                 `);
@@ -741,7 +733,3 @@ function setnovoLanc(obj,res,rej) {
 // });
 //
 // open modal
-
-//
-// // close modal
-// modal.close();

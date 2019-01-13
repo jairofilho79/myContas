@@ -73,11 +73,11 @@
 }
 
 .sn-btn-tag{
-    position: relative; /* Position them relative to the browser window */
+    position: fixed; /* Position them relative to the browser window */
     top: 10px;
     left: 0; /* Position them outside of the screen */
     transition: 0.3s; /* Add transition on hover */
-    padding: 10px; /* 15px padding */
+    padding: 0.8vw; /* 15px padding */
     margin: 1vh 0 0 0;
     width: auto; /* Set a specific width */
     text-decoration: none; /* Remove underline */
@@ -91,8 +91,44 @@
     transform: scale(1.1, 1.1);
 }
 
-#funcionalidades {
+#pesquisarLanc {
     background-color: #4CAF50;
+}
+#novoLanc {
+    top: 60px;
+    background-color: #3a45af;
+}
+#simulacao {
+    top:110px;
+    background-color: #af6319;
+}
+
+/*---------------------------------------Tip--------------------------------------------*/
+
+a.tip {
+    border-bottom: 1px dashed;
+    text-decoration: none
+}
+a.tip:hover {
+    cursor: help;
+    position: fixed;
+}
+a.tip span {
+    display: none;
+}
+a.tip:hover span {
+    border: #c0c0c0 1px dotted;
+    padding: 5px 20px 5px 5px;
+    display: inline-block;
+    z-index: 900;
+    top: -3vh;
+    left: 2vw;
+    margin: 20px;
+    position: fixed;
+    text-decoration: none;
+    background-color: black;
+    color: white;
+    font-size: 1.8vh;
 }
 
 /*---------------------------------------Off-Canvas--------------------------------------------*/
