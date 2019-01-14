@@ -18,7 +18,6 @@ http.createServer(function (req, res) {
                     break;
                 case "/lancamentos_all":
                     //TODO: Criar Streaming;
-
                     doSomething("SELECT * from lancamento")
                         .then(results => {
                             res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
@@ -28,8 +27,6 @@ http.createServer(function (req, res) {
                         .catch(e => {
                             throw e;
                         })
-
-
                     break;
                 case "/categorias_all":
                     doSomething("SELECT * from categoria")
@@ -73,6 +70,22 @@ http.createServer(function (req, res) {
                         if(params) {
                             const sql = sqlParams(params);
                             doSomething(`SELECT * from lancamento WHERE ${sql};`)
+                                .then(results => {
+                                    res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+                                    // console.log(results);
+                                    res.write(JSON.stringify(results));
+                                    res.end();
+                                })
+                                .catch(e => {
+                                    throw e;
+                                })
+                        }
+                    }
+                    else if (req.url.includes("/deleteLanc?",0)) {
+                        const params = reqParams(req.url);
+                        if(params) {
+                            const sql = sqlParams(params);
+                            doSomething(`DELETE from lancamento WHERE ${sql};`)
                                 .then(results => {
                                     res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
                                     // console.log(results);
@@ -244,7 +257,7 @@ function reqParams (url){
 }
 
 function sqlParams (obj) {
-    const attrs = ['user_id','nome','valorIni','valorFim','a_pagar','data_pagIni','data_pagFim','comentario','cat_id','ftd_id','agente','mpg_id','status'];
+    const attrs = ['tsc_id','user_id','nome','valorIni','valorFim','a_pagar','data_pagIni','data_pagFim','comentario','cat_id','ftd_id','agente','mpg_id','status'];
     let where = "";
 
     if(typeof obj !== "object") return false;

@@ -74,7 +74,8 @@ function moreInfo(i) {
         }
     });
 
-    modal.setContent(`
+    if(true) {
+        modal.setContent(`
         <h1 class="header">Mais informações</h1>
 
         <div class="row">
@@ -144,12 +145,19 @@ function moreInfo(i) {
           <div class="column">${lancamentosLista[i].agente}</div>
         </div>
     `);
+    }
 
     modal.addFooterBtn('Editar', 'tingle-btn tingle-btn--primary', function() {
         editarLanc(i);
         modal.close();
     });
 
+    modal.addFooterBtn('Deletar', 'tingle-btn tingle-btn--primary', function() {
+        fetch(apiUrl+'deleteLanc?tsc_id='+lancamentosLista[i].tsc_id)
+            .then(() => {Snackbar("Lançamento deletado com sucesso!","success"); getLancs(strPesquisa);})
+            .catch(() => {Snackbar("Lançamento deletado com falha!","danger");})
+        modal.close();
+    });
     modal.open();
 }
 
@@ -279,84 +287,86 @@ function novoLanc() {
         }
     });
 
-    let html = `
-    <form id="lancForm">
-        <div class="row">
-            <label for="nome">*Nome:</label>
-            <input type="text" class="t-right" id="nome">
-        </div>
-        <hr>
-        <div class="row">
-            <label for="agente">*Agente:</label>
-            <input type="text" class="t-right" id="agente">
-        </div>
-        <hr>
-        <div class="row">
-            <label for="comentario">Comentário:</label>
-            <input type="text" class="t-right" id="comentario">
-        </div>
-        <hr>  
-        <div class="row">
-            <label title="Este valor será dividido pelas parcelas." for="valor">*Valor Total:</label>
-            <input type="number"  class="t-right" id="valor">
-        </div>
-        <hr>
-        <div class="row">
-            <label for="parcelas">*Parcelas:</label>
-            <input type="number" min="1" step="1" value="1" class="t-right" id="parcelas">
-        </div>
-        <hr>  
-        <label for="fixo">*O Lançamento é:</label>
-        <ul class="ulOptions">
-            <li><input type="radio" name="fixo" id="fixo" value="1">Fixo</li>
-            <li><input type="radio" name="fixo" id="fixo" value="0" checked>Único</li>
-        </ul>
-        <hr>  
-        <div class="row">
-            <label for="data_pag">*Data de Pagamento:</label>
-            <input type="date" value="YYYY-MM-DD" class="t-right" id="data_pag">
-        </div>
-        <hr>  
-        <label for="status">*Status:</label>
-        <ul class="ulOptions">
-            <li><input type="radio" name="status" id="status" value="1"> Pago</li>
-            <li><input type="radio" name="status" id="status" value="0" checked> Não Pago</li>
-        </ul>
-        <hr>
-        <label for="a_pagar">*Tipo:</label>
-        <ul class="ulOptions">
-            <li><input type="radio" name="a_pagar" id="a_pagar" value="0"> Receita</li>
-            <li><input type="radio" name="a_pagar" id="a_pagar" value="1" checked> Custo</li>
-        </ul>
-    `;
+    if(true) {
+        let html = `
+            <form id="lancForm">
+                <div class="row">
+                    <label for="nome">*Nome:</label>
+                    <input type="text" class="t-right" id="nome">
+                </div>
+                <hr>
+                <div class="row">
+                    <label for="agente">*Agente:</label>
+                    <input type="text" class="t-right" id="agente">
+                </div>
+                <hr>
+                <div class="row">
+                    <label for="comentario">Comentário:</label>
+                    <input type="text" class="t-right" id="comentario">
+                </div>
+                <hr>  
+                <div class="row">
+                    <label title="Este valor será dividido pelas parcelas." for="valor">*Valor Total:</label>
+                    <input type="number"  class="t-right" id="valor">
+                </div>
+                <hr>
+                <div class="row">
+                    <label for="parcelas">*Parcelas:</label>
+                    <input type="number" min="1" step="1" value="1" class="t-right" id="parcelas">
+                </div>
+                <hr>  
+                <label for="fixo">*O Lançamento é:</label>
+                <ul class="ulOptions">
+                    <li><input type="radio" name="fixo" id="fixo" value="1">Fixo</li>
+                    <li><input type="radio" name="fixo" id="fixo" value="0" checked>Único</li>
+                </ul>
+                <hr>  
+                <div class="row">
+                    <label for="data_pag">*Data de Pagamento:</label>
+                    <input type="date" value="YYYY-MM-DD" class="t-right" id="data_pag">
+                </div>
+                <hr>  
+                <label for="status">*Status:</label>
+                <ul class="ulOptions">
+                    <li><input type="radio" name="status" id="status" value="1"> Pago</li>
+                    <li><input type="radio" name="status" id="status" value="0" checked> Não Pago</li>
+                </ul>
+                <hr>
+                <label for="a_pagar">*Tipo:</label>
+                <ul class="ulOptions">
+                    <li><input type="radio" name="a_pagar" id="a_pagar" value="0"> Receita</li>
+                    <li><input type="radio" name="a_pagar" id="a_pagar" value="1" checked> Custo</li>
+                </ul>
+            `;
 
-    html += `<hr><label for="cat_id">*Categoria:</label> <ul class="ulOptions">`;
-    let keys;
+                html += `<hr><label for="cat_id">*Categoria:</label> <ul class="ulOptions">`;
+                let keys;
 
-    keys = Object.keys(CategoriaLista);
-    for (let i = 0; i < keys.length; i++) {
-        html += `<li><input type="radio" name="cat_id" id="cat_id" value="${keys[i]}" checked> ${CategoriaLista[keys[i]]}</li>`;
+                keys = Object.keys(CategoriaLista);
+                for (let i = 0; i < keys.length; i++) {
+                    html += `<li><input type="radio" name="cat_id" id="cat_id" value="${keys[i]}" checked> ${CategoriaLista[keys[i]]}</li>`;
+                }
+                html += `</ul>`;
+
+                keys = Object.keys(FonteDinLista);
+                html += `<hr><label for="ftd_id">*Fonte do Dinheiro:</label> <ul class="ulOptions">`;
+                for (let i = 0; i < keys.length; i++) {
+                    html += `<li><input type="radio" name="ftd_id" id="ftd_id" value="${keys[i]}" checked> ${FonteDinLista[keys[i]].nome}</li>`;
+                }
+                html += `</ul>`;
+
+                keys = Object.keys(MeioPagLista);
+                html += `<hr><label for="mpg_id">*Meio de Pagamento:</label> <ul class="ulOptions">`;
+                for (let i = 0; i < keys.length; i++) {
+                    html += `<li><input type="radio" name="mpg_id" id="mpg_id" value="${keys[i]}" checked> ${MeioPagLista[keys[i]]}</li>`;
+                }
+                html += `</ul>`;
+
+                html += `
+            </form>`;
+
+        modal.setContent(html);
     }
-    html += `</ul>`;
-
-    keys = Object.keys(FonteDinLista);
-    html += `<hr><label for="ftd_id">*Fonte do Dinheiro:</label> <ul class="ulOptions">`;
-    for (let i = 0; i < keys.length; i++) {
-        html += `<li><input type="radio" name="ftd_id" id="ftd_id" value="${keys[i]}" checked> ${FonteDinLista[keys[i]].nome}</li>`;
-    }
-    html += `</ul>`;
-
-    keys = Object.keys(MeioPagLista);
-    html += `<hr><label for="mpg_id">*Meio de Pagamento:</label> <ul class="ulOptions">`;
-    for (let i = 0; i < keys.length; i++) {
-        html += `<li><input type="radio" name="mpg_id" id="mpg_id" value="${keys[i]}" checked> ${MeioPagLista[keys[i]]}</li>`;
-    }
-    html += `</ul>`;
-
-    html += `
-    </form>`;
-
-    modal.setContent(html);
 
     modal.addFooterBtn('Lançar', 'tingle-btn tingle-btn--primary', function() {
 
@@ -406,11 +416,11 @@ function novoLanc() {
                     .catch((e) => {if(e === 1){Snackbar("Pagamento feito com falha!","warning"); console.log("err");}
                     else if(e === 2) {Snackbar("Pagamento feito com sucesso mas não creditado!","warning"); console.log("err");}});
             }
+
+            novoLancObj.data_pag = moment(moment(novoLancObj.data_pag,"YYYY-MM-DD").add(1,"month").calendar()).format("YYYY-MM-DD");
         }
     });
-    modal.addFooterBtn('Limpar Campos', 'tingle-btn tingle-btn--primary', function() {
-        document.getElementById("lancForm").reset();
-    });
+    modal.addFooterBtn('Limpar Campos', 'tingle-btn tingle-btn--primary', function() {document.getElementById("lancForm").reset();});
     modal.open();
 }
 
@@ -462,14 +472,16 @@ function setEstatic()  {
     let lancEstatics = {
         valorReceitaPagoC: 0,
         valorReceitaPago: 0,
-        valorReceitaNPAgoC: 0,
-        valorReceitaNPAgo: 0,
+        valorReceitaNPagoC: 0,
+        valorReceitaNPago: 0,
         valorCustoPagoC: 0,
         valorCustoPago: 0,
         valorCustoNPagoC: 0,
         valorCustoNPago: 0,
-        dataInicial: '2099-12-31',
-        dataFinal: '1970-01-01'
+        dataInicialRec: '2999-12-31',
+        dataInicialCus: '2999-12-31',
+        dataFinalRec: '1070-01-01',
+        dataFinalCus: '1070-01-01'
     };
 
     if(lancamentosLista.length !== 0) {
@@ -487,51 +499,58 @@ function setEstatic()  {
                     lancEstatics.valorCustoNPago += lancamentosLista[i].valor;
                     lancEstatics.valorCustoNPagoC++;
                 } else {
-                    lancEstatics.valorReceitaNPAgo += lancamentosLista[i].valor;
-                    lancEstatics.valorReceitaNPAgoC++;
+                    lancEstatics.valorReceitaNPago += lancamentosLista[i].valor;
+                    lancEstatics.valorReceitaNPagoC++;
                 }
             }
-            if (moment(lancamentosLista[i].data_pag, "YYYY-MM-DD").format("YYYY-MM-DD") < moment(lancEstatics.dataInicial, "YYYY-MM-DD").format("YYYY-MM-DD")) lancEstatics.dataInicial = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
-            if (moment(lancamentosLista[i].data_pag, "YYYY-MM-DD").format("YYYY-MM-DD") > moment(lancEstatics.dataFinal, "YYYY-MM-DD").format("YYYY-MM-DD")) lancEstatics.dataFinal = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            if (lancamentosLista[i].a_pagar) {
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialCus).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialCus = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalCus).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalCus = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            } else {
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialRec).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialRec = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalRec).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalRec = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            }
+
         }
 
-        html = `
-            <div class="row">
-                <div class="column"><strong>Atributo</strong></div>
-                <div class="column">Conteúdos</div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Receita Paga</strong></div>
-                <div class="column">${formatter("money-br",lancEstatics.valorReceitaPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Receita Não Paga</strong></div>
-                <div class="column">${formatter("money-br",lancEstatics.valorReceitaNPAgo)} <strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPAgoC}]</strong></div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Custo Pago</strong></div>
-                <div class="column">${formatter("money-br",lancEstatics.valorCustoPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Custo Não Pago</strong></div>
-                <div class="column">${formatter("money-br",lancEstatics.valorCustoNPago)} <strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Data mais nova</strong></div>
-                <div class="column">${formatter("date-br",lancEstatics.dataInicial)}</div>
-            </div>
-            
-            <div class="row">
-                <div class="column"><strong>Data mais antiga</strong></div>
-                <div class="column">${formatter("date-br",lancEstatics.dataFinal)}</div>
-            </div>
-    `;
-    } else {
+        html =
+            `
+                <div class="card">
+                    <div class="tag tag-success">Receita</div>
+                    <div class="container">
+                        <p>Antiga: ${formatter("date-br",lancEstatics.dataInicialRec)}</p>
+                        <p>Recente: ${formatter("date-br",lancEstatics.dataFinalRec)}</p>
+                        <hr>
+                        <h4><b>Pago</b></h4> 
+                        <p>${formatter("money-br",lancEstatics.valorReceitaPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></p> 
+                        <hr>
+                        <h4><b>Não Pago</b></h4> 
+                        <p>${formatter("money-br",lancEstatics.valorReceitaNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPagoC}]</strong></p>
+                        <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
+                    </div> 
+                </div>
+               
+                <div class="card">
+                    <div class="tag tag-danger">Custo</div>
+                    <div class="container">
+                        <p>Antiga: ${formatter("date-br",lancEstatics.dataInicialCus)}</p>
+                        <p>Recente: ${formatter("date-br",lancEstatics.dataFinalCus)}</p>
+                        <hr>
+                        <h4><b>Pago</b></h4>
+                        <p>${formatter("money-br",lancEstatics.valorCustoPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></p> 
+                        <hr>
+                        <h4><b>Não Pago</b></h4> 
+                        <p>${formatter("money-br",lancEstatics.valorCustoNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></p>
+                        <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
+                    </div> 
+                </div>
+               `;
+    }
+    else {
         html = "<h1>Nada a mostrar! :(</h1>"
         document.getElementById("estatisticas").setAttribute("style","text-align:center;");
     }
@@ -606,7 +625,7 @@ function formatter(type,value) {
             return "R$ "+numberFormat1.format(value).replace("R$","");
             break;
         case "date-br":
-            return new Date(value).toLocaleDateString("pt-br");
+            return moment(value).format("DD/MM/YYYY");
             break;
     }
 }
