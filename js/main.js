@@ -1,6 +1,7 @@
 
-const apiUrl = "http://192.168.0.6:8082/";
+const apiUrl = "http://127.0.0.1:8082/";
 let lancamentosLista = [];
+let lancamentosFixosLista = [];
 let CategoriaLista = {};
 let FonteDinLista = {};
 let MeioPagLista = {};
@@ -17,29 +18,16 @@ window.onload = function() {
     getJson("meioPagamentos_all").then(result => {for(let i=0; i<result.length; i++) {MeioPagLista[result[i].mpg_id] = result[i].nome;}});
     atualizarFontesDin();
     getLancs("?status=0");
+    setFixos();
 
     Snackbar("Seja bem-vindo!","success");
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-    document.getElementById("pesquisarLanc").addEventListener("click", function(event) {pesquisarLanc(); closeOffCanvas()});
-    document.getElementById("novoLanc").addEventListener("click", function(event) {novoLanc(); closeOffCanvas()});
-    document.getElementById("simulacao").addEventListener("click", function(event) {simulacao(); closeOffCanvas()});
-
-    document.getElementById("funcionalidades").addEventListener("click", function(event) {
-        document.getElementById("mySidenav").style.width = "250px";
-        document.getElementById("app").style.marginLeft = "250px";
-        document.getElementById("app").addEventListener("click", closeOffCanvas);
-    });
-    document.getElementsByClassName("closebtn")[0].addEventListener("click", closeOffCanvas);
-
+    document.getElementById("pesquisarLanc").addEventListener("click", function(event) {pesquisarLanc();});
+    document.getElementById("novoLanc").addEventListener("click", function(event) {novoLanc();});
+    document.getElementById("simulacao").addEventListener("click", function(event) {simulacao();});
 });
-
-function closeOffCanvas() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("app").style.marginLeft = "0";
-    document.getElementById("app").removeEventListener("click",closeOffCanvas)
-}
 
 let ids = ['nome','agente'];
 let idsPesc = ['valorIni','valorFim','data_pagIni','data_pagFim'];
@@ -49,24 +37,24 @@ let novoLancObj = {};
 
 //Funções Principais (manipulam dados)
 
-function pagar(i) {
-    lancamentosLista[i].status = 1;
-    lancamentosLista[i].data_pag = moment(lancamentosLista[i].data_pag,"YYYY-MM-DD").format("YYYY-MM-DD");
-    lancamentosLista[i].criacao = moment(lancamentosLista[i].criacao,"YYYY-MM-DD").format("YYYY-MM-DD");
+function pagar(obj) {
+    obj.status = 1;
+    obj.data_pag = moment(obj.data_pag,"YYYY-MM-DD").format("YYYY-MM-DD");
+    obj.criacao = moment(obj.criacao,"YYYY-MM-DD").format("YYYY-MM-DD");
 
-    fetch(apiUrl+"editarLancamento",{method: "POST", body: JSON.stringify(lancamentosLista[i])})
+    fetch(apiUrl+"editarLancamento",{method: "POST", body: JSON.stringify(obj)})
         .catch(e => {console.log(e); Snackbar("Pagamento feito com falha!","danger");})
         .then(response => response.text())
         .then(() => {
             Snackbar("Pagamento feito com sucesso!","success");
             getLancs(strPesquisa);
-            new Promise((res,rej) => {setFontesDin(FonteDinLista[lancamentosLista[i].ftd_id].valor + Number(lancamentosLista[i].a_pagar ? lancamentosLista[i].valor*-1 : lancamentosLista[i].valor),lancamentosLista[i].ftd_id,res,rej)})
+            new Promise((res,rej) => {setFontesDin(FonteDinLista[obj.ftd_id].valor + Number(obj.a_pagar ? obj.valor*-1 : obj.valor),obj.ftd_id,res,rej)})
                 .then(() => {Snackbar("Pagamento feito com sucesso e creditado!","success");})
                 .catch(() => {Snackbar("Pagamento feito com sucesso mas não creditado!","warning");})
         }).catch(e => {console.log(e); Snackbar("Pagamento feito com falha!","danger");});
 }
 
-function moreInfo(i) {
+function moreInfo(obj) {
     const modal = new tingle.modal({
         footer: true,
         onClose: function () {
@@ -80,80 +68,80 @@ function moreInfo(i) {
 
         <div class="row">
           <div class="column"><strong>Nome</strong></div>
-          <div class="column">${lancamentosLista[i].nome}</div>
+          <div class="column">${obj.nome}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Valor</strong></div>
-          <div class="column">${formatter("money-br",lancamentosLista[i].valor)}</div>
+          <div class="column">${formatter("money-br",obj.valor)}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Comentário</strong></div>
-          <div class="column">${lancamentosLista[i].comentario ? lancamentosLista[i].comentario : "Não há comentários."}</div>
+          <div class="column">${obj.comentario ? obj.comentario : "Não há comentários."}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Data de Pagamento</strong></div>
-          <div class="column">${formatter("date-br",lancamentosLista[i].data_pag)}</div>
+          <div class="column">${formatter("date-br",obj.data_pag)}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Status</strong></div>
-          <div class="column">${lancamentosLista[i].status == "0" ? "Não Pago" : "Pago"}</div>
+          <div class="column">${obj.status == "0" ? "Não Pago" : "Pago"}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Tipo</strong></div>
-          <div class="column">${lancamentosLista[i].a_pagar == "0" ? "Receita" : "Custo"}</div>
+          <div class="column">${obj.a_pagar == "0" ? "Receita" : "Custo"}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Categoria</strong></div>
-          <div class="column">${CategoriaLista[lancamentosLista[i].cat_id]}</div>
+          <div class="column">${CategoriaLista[obj.cat_id]}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Fonte do Dinheiro</strong></div>
-          <div class="column">${FonteDinLista[lancamentosLista[i].ftd_id].nome}</div>
+          <div class="column">${FonteDinLista[obj.ftd_id].nome}</div>
         </div>
         
         <hr>
         
         <div class="row">
           <div class="column"><strong>Meio de Pagamento</strong></div>
-          <div class="column">${MeioPagLista[lancamentosLista[i].mpg_id]}</div>
+          <div class="column">${MeioPagLista[obj.mpg_id]}</div>
         </div>
         <hr>
         
         <div class="row">
           <div class="column"><strong>Agente</strong></div>
-          <div class="column">${lancamentosLista[i].agente}</div>
+          <div class="column">${obj.agente}</div>
         </div>
     `);
     }
 
     modal.addFooterBtn('Editar', 'tingle-btn tingle-btn--primary', function() {
-        editarLanc(i);
+        editarLanc(obj);
         modal.close();
     });
 
     modal.addFooterBtn('Deletar', 'tingle-btn tingle-btn--primary', function() {
-        fetch(apiUrl+'deleteLanc?tsc_id='+lancamentosLista[i].tsc_id)
+        fetch(apiUrl+'deleteLanc?tsc_id='+obj.tsc_id)
             .then(() => {Snackbar("Lançamento deletado com sucesso!","success"); getLancs(strPesquisa);})
             .catch(() => {Snackbar("Lançamento deletado com falha!","danger");})
         modal.close();
@@ -161,7 +149,7 @@ function moreInfo(i) {
     modal.open();
 }
 
-function editarLanc(i) {console.log("editar");}
+function editarLanc(obj) {console.log("editar");}
 
 function pesquisarLanc() {
     const modal = new tingle.modal({
@@ -289,6 +277,7 @@ function novoLanc() {
 
     if(true) {
         let html = `
+            <h1 class="header">Novo Lançamento</h1>
             <form id="lancForm">
                 <div class="row">
                     <label for="nome">*Nome:</label>
@@ -400,7 +389,7 @@ function novoLanc() {
         novoLancObj.valor /= parcelas;
         for(let i = 0; i < parcelas; i++) {
 
-            new Promise((res,rej) => {setnovoLanc(novoLancObj,res,rej)})
+            setnovoLanc(novoLancObj)
                 .then(() => {Snackbar("Pagamento feito com sucesso e creditado!","success");})
                 .catch((e) => {if(e === 1){Snackbar("Pagamento feito com falha!","warning"); console.log("err");}
                                 else if(e === 2) {Snackbar("Pagamento feito com sucesso mas não creditado!","warning"); console.log("err");}});
@@ -411,7 +400,7 @@ function novoLanc() {
                 obj.status = 0; obj.a_pagar = Number(!obj.a_pagar);
                 obj.data_pag = moment(moment(obj.data_pag,"YYYY-MM-DD").add(1,"month").calendar()).format("YYYY-MM-DD");
 
-                new Promise((res,rej) => {setnovoLanc(obj,res,rej)})
+                setnovoLanc(novoLancObj)
                     .then(() => {Snackbar("Pagamento feito com sucesso e creditado!","success");})
                     .catch((e) => {if(e === 1){Snackbar("Pagamento feito com falha!","warning"); console.log("err");}
                     else if(e === 2) {Snackbar("Pagamento feito com sucesso mas não creditado!","warning"); console.log("err");}});
@@ -427,10 +416,31 @@ function novoLanc() {
 //Funções de Renderização
 function setLanc() {
     const lancamentos = document.getElementById("lancamentos");
+    let lancEstatics = {
+        valorReceitaPagoC: 0,
+        valorReceitaPago: 0,
+        valorReceitaNPagoC: 0,
+        valorReceitaNPago: 0,
+        valorCustoPagoC: 0,
+        valorCustoPago: 0,
+        valorCustoNPagoC: 0,
+        valorCustoNPago: 0,
+        dataInicialRecP: '2999-12-31',
+        dataInicialRecNP: '2999-12-31',
+        dataInicialCusP: '2999-12-31',
+        dataInicialCusNP: '2999-12-31',
+        dataFinalRecP: '1070-01-01',
+        dataFinalRecNP: '1070-01-01',
+        dataFinalCusP: '1070-01-01',
+        dataFinalCusNP: '1070-01-01'
+    };
     lancamentos.innerHTML = "";
     if(lancamentosLista.length === 0) {
         lancamentos.setAttribute("style","text-align:center;");
         lancamentos.innerHTML = "<h1>Nada foi encontrado! :(</h1>";
+
+        document.getElementById("estatisticas").setAttribute("style","text-align:center;");
+        document.getElementById("estatisticas").innerHTML = "<h1>Nada a mostrar! :(</h1>"
     }
 
     for(let i=0;i<lancamentosLista.length;i++) {
@@ -449,112 +459,134 @@ function setLanc() {
                `;
         elemento.setAttribute("class","card");
         lancamentos.appendChild(elemento);
+
+        //Estatísticas
+        if (lancamentosLista[i].status) {
+            if (lancamentosLista[i].a_pagar) {
+                lancEstatics.valorCustoPago += lancamentosLista[i].valor;
+                lancEstatics.valorCustoPagoC++;
+
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialCusP).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialCusP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalCusP).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalCusP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            } else {
+                lancEstatics.valorReceitaPago += lancamentosLista[i].valor;
+                lancEstatics.valorReceitaPagoC++;
+
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialRecP).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialRecP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalRecP).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalRecP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            }
+        }
+        else {
+            if (lancamentosLista[i].a_pagar) {
+                lancEstatics.valorCustoNPago += lancamentosLista[i].valor;
+                lancEstatics.valorCustoNPagoC++;
+
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialCusNP).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialCusNP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalCusNP).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalCusNP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            } else {
+                lancEstatics.valorReceitaNPago += lancamentosLista[i].valor;
+                lancEstatics.valorReceitaNPagoC++;
+
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialRecNP).format("YYYY-MM-DD"))
+                    lancEstatics.dataInicialRecNP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalRecNP).format("YYYY-MM-DD"))
+                    lancEstatics.dataFinalRecNP = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
+            }
+        }
     }
 
-    Array.from( document.getElementsByClassName("pagar")).forEach(function(element) {
+    Array.from( document.getElementById("lancamentos").getElementsByClassName("pagar")).forEach(function(element) {
         element.addEventListener('click', function() {
-            pagar(this.id);
+            pagar(lancamentosLista[this.id]);
         });
     });
 
-    Array.from( document.getElementsByClassName("moreInfo")).forEach(function(element) {
+    Array.from( document.getElementById("lancamentos").getElementsByClassName("moreInfo")).forEach(function(element) {
         element.addEventListener('click', function() {
-            moreInfo(this.id);
+            moreInfo(lancamentosLista[this.id]);
         });
     });
 
-    setEstatic();
+    setEstatic(lancEstatics);
     tabsHome.open(0);
 }
 
-function setEstatic()  {
+function setEstatic(lancEstatics)  {
     let html = "";
-    let lancEstatics = {
-        valorReceitaPagoC: 0,
-        valorReceitaPago: 0,
-        valorReceitaNPagoC: 0,
-        valorReceitaNPago: 0,
-        valorCustoPagoC: 0,
-        valorCustoPago: 0,
-        valorCustoNPagoC: 0,
-        valorCustoNPago: 0,
-        dataInicialRec: '2999-12-31',
-        dataInicialCus: '2999-12-31',
-        dataFinalRec: '1070-01-01',
-        dataFinalCus: '1070-01-01'
-    };
 
-    if(lancamentosLista.length !== 0) {
-        for (let i = 0; i < lancamentosLista.length; i++) {
-            if (lancamentosLista[i].status) {
-                if (lancamentosLista[i].a_pagar) {
-                    lancEstatics.valorCustoPago += lancamentosLista[i].valor;
-                    lancEstatics.valorCustoPagoC++;
-                } else {
-                    lancEstatics.valorReceitaPago += lancamentosLista[i].valor;
-                    lancEstatics.valorReceitaPagoC++;
-                }
-            } else {
-                if (lancamentosLista[i].a_pagar) {
-                    lancEstatics.valorCustoNPago += lancamentosLista[i].valor;
-                    lancEstatics.valorCustoNPagoC++;
-                } else {
-                    lancEstatics.valorReceitaNPago += lancamentosLista[i].valor;
-                    lancEstatics.valorReceitaNPagoC++;
-                }
-            }
-            if (lancamentosLista[i].a_pagar) {
-                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialCus).format("YYYY-MM-DD"))
-                    lancEstatics.dataInicialCus = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
-                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalCus).format("YYYY-MM-DD"))
-                    lancEstatics.dataFinalCus = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
-            } else {
-                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") < moment(lancEstatics.dataInicialRec).format("YYYY-MM-DD"))
-                    lancEstatics.dataInicialRec = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
-                if (moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD") > moment(lancEstatics.dataFinalRec).format("YYYY-MM-DD"))
-                    lancEstatics.dataFinalRec = moment(lancamentosLista[i].data_pag).format("YYYY-MM-DD")
-            }
-
-        }
-
-        html =
-            `
+        if(lancEstatics.valorReceitaPagoC !== 0 || lancEstatics.valorReceitaNPagoC !== 0) {
+            html =
+                `
                 <div class="card">
                     <div class="tag tag-success">Receita</div>
                     <div class="container">
-                        <p>Antiga: ${formatter("date-br",lancEstatics.dataInicialRec)}</p>
-                        <p>Recente: ${formatter("date-br",lancEstatics.dataFinalRec)}</p>
+                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialRec)}</p>
+                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalRec)}</p>
                         <hr>
                         <h4><b>Pago</b></h4> 
-                        <p>${formatter("money-br",lancEstatics.valorReceitaPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></p> 
+                        <p>${formatter("money-br", lancEstatics.valorReceitaPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></p> 
                         <hr>
                         <h4><b>Não Pago</b></h4> 
-                        <p>${formatter("money-br",lancEstatics.valorReceitaNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPagoC}]</strong></p>
+                        <p>${formatter("money-br", lancEstatics.valorReceitaNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPagoC}]</strong></p>
                         <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
                     </div> 
-                </div>
-               
+                </div>`;
+        }
+        if(lancEstatics.valorCustoPagoC !== 0 || lancEstatics.valorCustoNPagoC !== 0) {
+            html += `   
                 <div class="card">
                     <div class="tag tag-danger">Custo</div>
                     <div class="container">
-                        <p>Antiga: ${formatter("date-br",lancEstatics.dataInicialCus)}</p>
-                        <p>Recente: ${formatter("date-br",lancEstatics.dataFinalCus)}</p>
+                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialCus)}</p>
+                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalCus)}</p>
                         <hr>
                         <h4><b>Pago</b></h4>
-                        <p>${formatter("money-br",lancEstatics.valorCustoPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></p> 
+                        <p>${formatter("money-br", lancEstatics.valorCustoPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></p> 
                         <hr>
                         <h4><b>Não Pago</b></h4> 
-                        <p>${formatter("money-br",lancEstatics.valorCustoNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></p>
+                        <p>${formatter("money-br", lancEstatics.valorCustoNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></p>
                         <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
                     </div> 
                 </div>
                `;
-    }
-    else {
-        html = "<h1>Nada a mostrar! :(</h1>"
-        document.getElementById("estatisticas").setAttribute("style","text-align:center;");
-    }
+        }
     document.getElementById("estatisticas").innerHTML = html;
+}
+
+function setFixos() {
+    const fixo = document.getElementById("fixos");
+    getJson("fixos_all")
+        .then((results) => {
+            lancamentosFixosLista = results;
+            for (let i = 0; i < lancamentosFixosLista.length; i++) {
+                const elemento = document.createElement("div");
+                elemento.innerHTML =
+                    `
+                    <div class="tag tag-${lancamentosFixosLista[i].a_pagar == "0" ? "success" : "danger"}">${lancamentosFixosLista[i].a_pagar == "0" ? "Receita" : "Custo"}</div>
+                        <div class="container">
+                        <h4 style="text-align: center;"><b>${lancamentosFixosLista[i].nome}</b></h4> 
+                        <p>${formatter("money-br",lancamentosFixosLista[i].valor)}</p> 
+                        <p>${results[i].ativo == 1 ? "Ativo" : "Inativo"}</p>
+                        <button class="card-btn moreInfo" id="${i}">+ Info</button> 
+                        </div> 
+                    </div>
+               `;
+                elemento.setAttribute("class","card");
+                fixo.appendChild(elemento);
+            }
+
+            Array.from( document.getElementById("fixos").getElementsByClassName("moreInfo")).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    moreInfo(lancamentosFixosLista[this.id]);
+                });
+            });
+        })
 }
 
 function atualizarFontesDin() {
@@ -668,19 +700,23 @@ function setFontesDin(value,id,res,rej) {
             })
 }
 
-function setnovoLanc(obj,res,rej) {
-    fetch(apiUrl+"novoLancamento",{method:"POST",body: JSON.stringify(obj)})
-        .catch(e => {console.log(e); rej(1);})
-        .then(response => response.text())
-            .then(() => {
-                getLancs(strPesquisa);
-                if(novoLancObj.status == 1) {
-                    new Promise((res,rej) => {setFontesDin(FonteDinLista[novoLancObj.ftd_id].valor + Number(novoLancObj.a_pagar == 1 ? novoLancObj.valor*-1 : novoLancObj.valor),novoLancObj.ftd_id,res,rej)})
-                        .then(() => {res();})
-                        .catch(() => {rej(2);})
-                }
-            })
-            .catch(e => {console.log(e); rej(1);});
+function setnovoLanc(obj) {
+    return new Promise((res,rej) => {
+        fetch(apiUrl+"novoLancamento",{method:"POST",body: JSON.stringify(obj)})
+            .catch(e => {console.log(e); rej(1);})
+            .then(response => response.text())
+                .then(() => {
+                    getLancs(strPesquisa);
+                    if(obj.status == 1) {
+                        new Promise((res,rej) => {setFontesDin(FonteDinLista[obj.ftd_id].valor + Number(obj.a_pagar == 1 ? obj.valor*-1 : obj.valor),obj.ftd_id,res,rej)})
+                            .then(() => {res();})
+                            .catch(() => {rej(2);})
+                    } else {
+                        res();
+                    }
+                })
+                .catch(e => {console.log(e); rej(1);});
+    });
 }
 
 // {

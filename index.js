@@ -18,37 +18,16 @@ http.createServer(function (req, res) {
                     break;
                 case "/lancamentos_all":
                     //TODO: Criar Streaming;
-                    doSomething("SELECT * from lancamento")
-                        .then(results => {
-                            res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-                            res.write(JSON.stringify(results));
-                            res.end();
-                        })
-                        .catch(e => {
-                            throw e;
-                        })
+                    retRes("SELECT * from lancamento",res);
                     break;
                 case "/categorias_all":
-                    doSomething("SELECT * from categoria")
-                        .then(results => {
-                            res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-                            res.write(JSON.stringify(results));
-                            res.end();
-                        })
-                        .catch(e => {
-                            throw e;
-                        })
+                    retRes("SELECT * from categoria",res);
                     break;
                 case "/meioPagamentos_all":
-                    doSomething("SELECT * from meio_pagamento")
-                        .then(results => {
-                            res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-                            res.write(JSON.stringify(results));
-                            res.end();
-                        })
-                        .catch(e => {
-                            throw e;
-                        })
+                    retRes("SELECT * from meio_pagamento",res);
+                    break;
+                case "/fixos_all":
+                    retRes("SELECT * FROM fixo LEFT OUTER JOIN lancamento ON fixo.tsc_id = lancamento.tsc_id",res);
                     break;
                 default: {
                     if(req.url.includes("/fontesDinheiro/",0)){
@@ -85,6 +64,7 @@ http.createServer(function (req, res) {
                         const params = reqParams(req.url);
                         if(params) {
                             const sql = sqlParams(params);
+                            
                             doSomething(`DELETE from lancamento WHERE ${sql};`)
                                 .then(results => {
                                     res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
@@ -238,6 +218,18 @@ function dml(query,res) {
         })
         .catch(e => {
             console.log(e);
+        })
+}
+
+function retRes(query,res) { //return result
+    doSomething(query)
+        .then(results => {
+            res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+            res.write(JSON.stringify(results));
+            res.end();
+        })
+        .catch(e => {
+            throw e;
         })
 }
 
