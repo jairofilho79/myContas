@@ -44,6 +44,7 @@ http.createServer(function (req, res) {
                                 })
                         }
                     }
+
                     else if (req.url.includes("/lancamentos?",0)) {
                         const params = reqParams(req.url);
                         if(params) {
@@ -60,25 +61,27 @@ http.createServer(function (req, res) {
                                 })
                         }
                     }
+
                     else if (req.url.includes("/deleteLanc?",0)) {
                         const params = reqParams(req.url);
                         if(params) {
                             const sql = sqlParams(params);
-                            
+                            //SET @m = (SELECT `AUTO_INCREMENT`-1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'minhascontas' AND TABLE_NAME = 'fixo'); SET @s = CONCAT('ALTER TABLE fixo AUTO_INCREMENT=', @m); PREPARE stmt1 FROM @s; EXECUTE stmt1; DEALLOCATE PREPARE stmt1;
                             doSomething(`DELETE from lancamento WHERE ${sql};`)
-                                .then(results => {
-                                    res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
-                                    // console.log(results);
-                                    res.write(JSON.stringify(results));
-                                    res.end();
+                                .then(() => {
+                                    deleteFixo(sql,res);
                                 })
-                                .catch(e => {
-                                    throw e;
-                                })
+                                .catch(e => {throw e;})
+
                         }
+
+                    }
+
+                    else if (req.url.includes("/deleteFixo?",0)) {
+                        const params = reqParams(req.url);
+                        if(params) {deleteFixo(sqlParams(params),res); }
                     }
                 }
-                    //TODO: Aprender REGEX para fazer o caso do FonteDinheiro
             }
             break;
         case "POST":
@@ -94,7 +97,7 @@ http.createServer(function (req, res) {
                 case "/novoLancamento":
                     req.on('data', (dado) => {
                         let params = JSON.parse(dado.toString('utf8'));
-                        const headValues = getHeaderAndValues("novoLancamento","novo",params,res);
+                        const headValues = getHeaderAndValues("lancamento","novo",params,res);
 
                         console.log(`INSERT INTO lancamento ${headValues[0]} VALUES ${headValues[1]}`);
                         doSomething(`INSERT INTO lancamento ${headValues[0]} VALUES ${headValues[1]}`)
@@ -103,8 +106,8 @@ http.createServer(function (req, res) {
                                     doSomething("SELECT `AUTO_INCREMENT` FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'minhascontas' AND TABLE_NAME = 'lancamento';")
                                         .then((response)=> {
                                             let ai = Number(JSON.parse(JSON.stringify(response))[0].AUTO_INCREMENT)-1;
-                                            console.log(`INSERT INTO fixo(tsc_id,status) VALUES ('${ai}','1');`);
-                                            dml(`INSERT INTO fixo(tsc_id,status) VALUES ('${ai}','1');`,res);
+                                            console.log(`INSERT INTO fixo(tsc_id,ativo) VALUES ('${ai}','1');`);
+                                            dml(`INSERT INTO fixo(tsc_id,ativo) VALUES ('${ai}','1');`,res);
                                         })
                                         .catch((e) => {
                                             console.log(e);
@@ -130,6 +133,16 @@ http.createServer(function (req, res) {
                     })
                     break;
 
+                case "/editarLancFixo":
+                    req.on("data", (dado) => {
+                        let params = JSON.parse(dado.toString('utf8'));
+
+                        const headValues = getHeaderAndValues("lancFixo","editar",params,res);
+
+                        dml(`UPDATE fixo SET ${headValues} WHERE f_id = ${params.f_id}`,res);
+                    })
+                    break;
+
                 case "/editarFtdValor":
                     req.on("data", (dado) => {
                         let params = JSON.parse(dado.toString('utf8'));
@@ -143,6 +156,15 @@ http.createServer(function (req, res) {
 
 }).listen(8082);
 
+function deleteFixo(sql,res) {
+    doSomething(`DELETE from fixo WHERE ${sql};`)
+        .then(() => {
+            res.writeHead(200, {'Content-Type': 'text/plain; charset=utf-8'});
+            res.end();
+        })
+        .catch(e => {throw e;})
+}
+
 function doSomething(query) {
     return new Promise((resolve, reject) => {
         con.query(query, function (err, result, fields) {
@@ -154,7 +176,7 @@ function doSomething(query) {
 
 function verify(type,thing) {
     switch(type) {
-        case "novoLancamento":
+        case "lancamento":
             try {
                 if (isNaN(validator.toFloat(thing.valor + ''))) throw new Error("valorError");
                 if (isNaN(validator.toInt(thing.user_id + ''))) throw new Error("user_idError");
@@ -170,8 +192,19 @@ function verify(type,thing) {
                 return true;
                 break;
             } catch(e) {
-                console.log(e);
+                console.error(e);
             }
+            break;
+        case "lancFixo":
+            try {
+                if (thing.ativo == 0 || thing.ativo == 1) throw new Error("ativoError");
+                if (isNaN(validator.toInt(thing.tsc_id + ''))) throw new Error("tsc_idError");
+                if (isNaN(validator.toInt(thing.f_id + ''))) throw new Error("f_idError");
+            } catch(e) {
+                console.error(e);
+            }
+            return true;
+            break;
     }
 }
 
@@ -179,27 +212,32 @@ function getHeaderAndValues(vfy,mount,params,res) {
 
     if(verify(vfy,params)){
         const attrs = ['user_id','nome','valor','a_pagar','data_pag','comentario','cat_id','ftd_id','agente','mpg_id','status','criacao'];
-        switch(mount) {
-            case "novo":
-                let header = `(${attrs[0]}`, value = `('${params[attrs[0]]}'`;
-                for(let i = 1; i < attrs.length; i++) {
-                    header += `,${attrs[i]}`;
-                    value += `,'${params[attrs[i]]}'`;
+        switch (vfy) {
+            case "lancamento":
+                switch(mount) {
+                    case "novo":
+                        let header = `(${attrs[0]}`, value = `('${params[attrs[0]]}'`;
+                        for(let i = 1; i < attrs.length; i++) {
+                            header += `,${attrs[i]}`;
+                            value += `,'${params[attrs[i]]}'`;
+                        }
+                        header += `)`;
+                        value += `)`;
+                        return [header,value];
+                        break;
+                    case "editar":
+                        let sentence = `${attrs[0]} = '${params[attrs[0]]}'`;
+                        for(let i = 1; i < attrs.length; i++) {
+                            sentence += `, ${attrs[i]} = '${params[attrs[i]]}'`;
+                        }
+                        return sentence;
+                        break;
                 }
-                header += `)`;
-                value += `)`;
-                return [header,value];
                 break;
-            case "editar":
-                let sentence = `${attrs[0]} = '${params[attrs[0]]}'`;
-                for(let i = 1; i < attrs.length; i++) {
-                    sentence += `, ${attrs[i]} = '${params[attrs[i]]}'`;
-                }
-                return sentence;
+            case "lancFixo":
+                return `ativo = ${params.ativo}`;
                 break;
         }
-
-
 
     } else {
         res.writeHead(400, {'Content-Type': 'text/plain'});

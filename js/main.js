@@ -54,7 +54,7 @@ function pagar(obj) {
         }).catch(e => {console.log(e); Snackbar("Pagamento feito com falha!","danger");});
 }
 
-function moreInfo(obj) {
+function moreInfo(obj,from) {
     const modal = new tingle.modal({
         footer: true,
         onClose: function () {
@@ -141,9 +141,16 @@ function moreInfo(obj) {
     });
 
     modal.addFooterBtn('Deletar', 'tingle-btn tingle-btn--primary', function() {
-        fetch(apiUrl+'deleteLanc?tsc_id='+obj.tsc_id)
-            .then(() => {Snackbar("Lançamento deletado com sucesso!","success"); getLancs(strPesquisa);})
-            .catch(() => {Snackbar("Lançamento deletado com falha!","danger");})
+        if(from === "fixo") {
+            fetch(apiUrl+'deleteFixo?tsc_id='+obj.tsc_id)
+                .then(() => {Snackbar("Lançamento Fixo deletado com sucesso!","success"); setFixos();})
+                .catch(() => {Snackbar("Lançamento Fixo deletado com falha!","danger");})
+        } else {
+            fetch(apiUrl+'deleteLanc?tsc_id='+obj.tsc_id)
+                .then(() => {Snackbar("Lançamento deletado com sucesso!","success"); getLancs(strPesquisa); setFixos();})
+                .catch(() => {Snackbar("Lançamento deletado com falha!","danger");})
+        }
+
         modal.close();
     });
     modal.open();
@@ -390,7 +397,7 @@ function novoLanc() {
         for(let i = 0; i < parcelas; i++) {
 
             setnovoLanc(novoLancObj)
-                .then(() => {Snackbar("Pagamento feito com sucesso e creditado!","success");})
+                .then(() => {Snackbar("Pagamento feito com sucesso e creditado!","success"); if(novoLancObj.fixo == 1) setFixos();})
                 .catch((e) => {if(e === 1){Snackbar("Pagamento feito com falha!","warning"); console.log("err");}
                                 else if(e === 2) {Snackbar("Pagamento feito com sucesso mas não creditado!","warning"); console.log("err");}});
 
@@ -518,52 +525,88 @@ function setLanc() {
 }
 
 function setEstatic(lancEstatics)  {
-    let html = "";
+    let html = ``;
 
-        if(lancEstatics.valorReceitaPagoC !== 0 || lancEstatics.valorReceitaNPagoC !== 0) {
-            html =
+    if(lancEstatics.valorReceitaPagoC != 0 || lancEstatics.valorReceitaNPagoC != 0) {
+        html +=
+            `
+            <div class="card">
+                <div class="tag tag-success">Receita</div>
+                <div class="container">
+            `;
+        if(lancEstatics.valorReceitaPagoC != 0) {
+            html +=
                 `
-                <div class="card">
-                    <div class="tag tag-success">Receita</div>
-                    <div class="container">
-                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialRec)}</p>
-                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalRec)}</p>
-                        <hr>
-                        <h4><b>Pago</b></h4> 
-                        <p>${formatter("money-br", lancEstatics.valorReceitaPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></p> 
-                        <hr>
-                        <h4><b>Não Pago</b></h4> 
-                        <p>${formatter("money-br", lancEstatics.valorReceitaNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPagoC}]</strong></p>
-                        <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
-                    </div> 
-                </div>`;
+            <h4><b>Pago</b></h4> 
+            <p>${formatter("money-br", lancEstatics.valorReceitaPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaPagoC}]</strong></p> 
+            <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialRecP)}</p>
+            <p>Recente: ${formatter("date-br", lancEstatics.dataFinalRecP)}</p>
+            `;
         }
-        if(lancEstatics.valorCustoPagoC !== 0 || lancEstatics.valorCustoNPagoC !== 0) {
-            html += `   
+
+        html += lancEstatics.valorReceitaPagoC != 0 && lancEstatics.valorReceitaNPagoC != 0 ? "<hr>" : "";
+
+        if(lancEstatics.valorReceitaNPagoC != 0) {
+            html +=
+                `
+            <hr>
+            <h4><b>Não Pago</b></h4> 
+            <p>${formatter("money-br", lancEstatics.valorReceitaNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorReceitaNPagoC}]</strong></p>
+            <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialRecNP)}</p>
+            <p>Recente: ${formatter("date-br", lancEstatics.dataFinalRecNP)}</p>
+            `;
+        }
+        html += `
+            <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
+            </div> 
+        </div>
+        `;
+    }
+    if(lancEstatics.valorCustoPagoC !== 0 || lancEstatics.valorCustoNPagoC !== 0) {
+
+            html +=
+                `
                 <div class="card">
                     <div class="tag tag-danger">Custo</div>
                     <div class="container">
-                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialCus)}</p>
-                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalCus)}</p>
-                        <hr>
+                `;
+            if(lancEstatics.valorCustoPagoC !== 0) {
+                html +=
+                    `
                         <h4><b>Pago</b></h4>
                         <p>${formatter("money-br", lancEstatics.valorCustoPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoPagoC}]</strong></p> 
-                        <hr>
+                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialCusP)}</p>
+                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalCusP)}</p>
+                    `;
+            }
+
+            html += lancEstatics.valorCustoPagoC !== 0 && lancEstatics.valorCustoNPagoC !== 0 ? "<hr>" : "";
+
+            if(lancEstatics.valorCustoNPagoC !== 0) {
+                html +=
+                    `
                         <h4><b>Não Pago</b></h4> 
                         <p>${formatter("money-br", lancEstatics.valorCustoNPago)}<strong title="Nº de Lançamentos">[${lancEstatics.valorCustoNPagoC}]</strong></p>
+                        <p>Antiga: ${formatter("date-br", lancEstatics.dataInicialCusNP)}</p>
+                        <p>Recente: ${formatter("date-br", lancEstatics.dataFinalCusNP)}</p>
+                        `;
+            }
+            html += `
                         <!--<button class="card-btn moreInfo" id="">+ Info</button> -->
-                    </div> 
-                </div>
-               `;
+                        </div> 
+                    </div>
+                    `;
         }
     document.getElementById("estatisticas").innerHTML = html;
 }
 
 function setFixos() {
     const fixo = document.getElementById("fixos");
+    fixo.innerHTML ="";
     getJson("fixos_all")
         .then((results) => {
             lancamentosFixosLista = results;
+            if(results.length === 0) {fixo.innerHTML = "<h1>Nada a mostrar! :(</h1>"; return;}
             for (let i = 0; i < lancamentosFixosLista.length; i++) {
                 const elemento = document.createElement("div");
                 elemento.innerHTML =
@@ -574,6 +617,7 @@ function setFixos() {
                         <p>${formatter("money-br",lancamentosFixosLista[i].valor)}</p> 
                         <p>${results[i].ativo == 1 ? "Ativo" : "Inativo"}</p>
                         <button class="card-btn moreInfo" id="${i}">+ Info</button> 
+                        <button class="card-btn change_ativo" id="${i}">${results[i].ativo == 1 ? "Inativar" : "Ativar"}</button> 
                         </div> 
                     </div>
                `;
@@ -581,11 +625,47 @@ function setFixos() {
                 fixo.appendChild(elemento);
             }
 
+            fixo.innerHTML += `
+                <hr>
+                <button class="btn btn-orange" id="gerar_lancs">Gerar Lançamentos do mês!</button>
+            `;
+
             Array.from( document.getElementById("fixos").getElementsByClassName("moreInfo")).forEach(function(element) {
                 element.addEventListener('click', function() {
-                    moreInfo(lancamentosFixosLista[this.id]);
+                    moreInfo(lancamentosFixosLista[this.id],'fixo');
                 });
             });
+            Array.from( document.getElementById("fixos").getElementsByClassName("change_ativo")).forEach(function(element) {
+                element.addEventListener('click', function() {
+                    lancamentosFixosLista[this.id].ativo = Number(!lancamentosFixosLista[this.id].ativo);
+                    fetch(apiUrl+"editarLancFixo",{method: "POST", body: JSON.stringify(lancamentosFixosLista[this.id])})
+                        .catch(e => {console.log(e); Snackbar(`${lancamentosFixosLista[this.id].ativo ? "Ativação" : "Inativação"} feita com falha!`,"danger");})
+                        .then(() => {Snackbar(`${lancamentosFixosLista[this.id].ativo ? "Ativação" : "Inativação"} feita com sucesso!`,"success"); setFixos();})
+                });
+            });
+            document.getElementById("gerar_lancs").addEventListener('click', function() {
+                let s_counter = 0;
+                let d_counter = 0;
+                let i = 0;
+                for(let l of lancamentosFixosLista) {
+                    if(l.ativo == 1) {
+                        let n_date = moment(  moment().format("YYYY-MM") +"-"+ moment(l.data_pag,"YYYY-MM-DD").format("DD") ).format("YYYY-MM-DD");
+                        if(n_date == "Invalid Date") {n_date = moment().endOf('month').format("YYYY-MM-DD");}
+                        l.data_pag = n_date;
+                        l.status = 0;
+                        l.criacao = moment(l.criacao,"YYYY-MM-DD").format("YYYY-MM-DD");
+                        setnovoLanc(l)
+                            .then(() => {s_counter++; })
+                            .catch(e => {console.error(e); d_counter++})
+                            .finally(() => {
+                                if(++i === lancamentosFixosLista.length) {
+                                    Snackbar(s_counter+" Lançamentos gerados com sucesso!","success");
+                                    setTimeout(() => {Snackbar(d_counter+" Lançamentos gerados com falha!","danger")},3500);
+                                }
+                            })
+                    }
+                }
+            })
         })
 }
 
