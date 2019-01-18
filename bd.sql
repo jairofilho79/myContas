@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `Fixo`
 (
     f_id SERIAL PRIMARY KEY,
     tsc_id BIGINT NOT NULL,
-    status TINYINT NOT NULL
+    ativo TINYINT NOT NULL
 );
 
 INSERT INTO `Usuario` (nome,email,senha,sexo,criacao) VALUES ('Jairo Filho','jairofilho79@gmail.com','jairofilho',1,'2019-01-01');

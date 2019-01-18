@@ -423,6 +423,7 @@
         });
         modal.addFooterBtn('Pesquisar Tudo', 'tingle-btn tingle-btn--primary', function() {
             getLancs("_all");
+            strPesquisa = "_all";
             modal.close();
         });
         modal.open();
